@@ -10,5 +10,12 @@
     "active": false,
     "channel": "غرانيج الرسمية",
     "email": "granij@deer.com"
+  },
+  "0NvXp60hXjZRodzwP8siRGgTFkA2": {
+    "role": "publisher",
+    "canPublish": true,
+    "active": true,
+    "channel": "هجين",
+    "email": "hjeen@deer.com"
   }
 }
