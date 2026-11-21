@@ -3,5 +3,12 @@
     "role": "admin",
     "active": true,
     "channel": "main"
+  },
+  "RUoe6VONyxUcuZeE17tnk0xeauQ2": {
+    "role": "publisher",
+    "canPublish": true,
+    "active": true,
+    "channel": "غرانيج الرسمية",
+    "email": "granij@deer.com"
   }
 }
