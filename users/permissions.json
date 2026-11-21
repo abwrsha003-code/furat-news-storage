@@ -1,7 +1,7 @@
 {
   "5W9eOJCruwMgnL6NqYID2esfVa12": {
     "role": "admin",
-    "canPublish": true,
-
+    "active": true,
+    "channel": "main"
   }
 }
