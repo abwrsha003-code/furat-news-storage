@@ -18,22 +18,22 @@ jobs:
         id: news
         run: |
           set +e
-          NEW_FILE=$(git diff --name-only HEAD~1 HEAD -- 'news/*.json' | head -n 1)
-          GIT_EXIT=$?
+          # الحصول على الملفات التي تمت إضافتها فقط (A = Added)
+          NEW_FILE=$(git diff --name-status HEAD~1 HEAD -- 'news/*.json' | grep '^A' | head -n 1 | awk '{print $2}')
           set -e
 
           if [ -z "$NEW_FILE" ]; then
-            echo "لا يوجد ملف خبر جديد في هذا الدفع"
+            echo "لا يوجد ملف خبر جديد (ربما تعديل أو حذف فقط)"
             echo "skip=true" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          echo "الملف المكتشف: $NEW_FILE"
+          echo "الملف الجديد المكتشف: $NEW_FILE"
           echo "skip=false" >> $GITHUB_OUTPUT
           echo "file=$NEW_FILE" >> $GITHUB_OUTPUT
 
           if [ ! -f "$NEW_FILE" ]; then
-            echo "⚠️ الملف غير موجود (ربما تم حذفه): $NEW_FILE"
+            echo "⚠️ الملف غير موجود: $NEW_FILE"
             echo "skip=true" >> $GITHUB_OUTPUT
             exit 0
           fi
