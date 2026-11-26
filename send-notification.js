@@ -6,16 +6,19 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-const title = process.env.NEWS_TITLE || 'خبر جديد';
+const notificationTitle = process.env.NOTIF_TITLE || 'خبر جديد';
+const newsTitle = process.env.NEWS_TITLE || 'بدون عنوان';
 const region = process.env.NEWS_REGION || '';
+const action = process.env.NEWS_ACTION || 'جديد';
 
 const message = {
   notification: {
-    title: `خبر جديد: ${title}`,
-    body: region ? `المنطقة: ${region}` : 'انقر لعرض التفاصيل'
+    title: `${notificationTitle}: ${newsTitle}`,
+    body: region ? `المنطقة: ${region}` : `تم ${action} الخبر`
   },
   data: {
-    newsId: process.env.NEWS_ID || ''
+    newsId: process.env.NEWS_ID || '',
+    action: action
   },
   topic: 'furat_news'
 };
