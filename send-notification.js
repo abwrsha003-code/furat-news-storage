@@ -16,7 +16,8 @@ const message = {
     title: `${notificationTitle}: ${newsTitle}`,
     body: region ? `المنطقة: ${region}` : `تم ${action} الخبر`,
     newsId: process.env.NEWS_ID || '',
-    action: action
+    action: action,
+    region: region
   },
   topic: 'furat_news'
 };
