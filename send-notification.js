@@ -10,15 +10,13 @@ const notificationTitle = process.env.NOTIF_TITLE || 'خبر جديد';
 const newsTitle = process.env.NEWS_TITLE || 'بدون عنوان';
 const region = process.env.NEWS_REGION || '';
 const action = process.env.NEWS_ACTION || 'جديد';
-const imageUrl = process.env.NEWS_IMAGE || '';
 
 const message = {
   data: {
     title: `${notificationTitle}: ${newsTitle}`,
     body: region ? `المنطقة: ${region}` : `تم ${action} الخبر`,
     newsId: process.env.NEWS_ID || '',
-    action: action,
-    imageUrl: imageUrl
+    action: action
   },
   topic: 'furat_news'
 };
