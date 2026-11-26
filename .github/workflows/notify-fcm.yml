@@ -2,30 +2,40 @@ name: Notify FCM on New News
 on:
   push:
     paths:
-      - 'news/*.json' # يعمل فقط عند تعديل أو إضافة ملفات الأخبار
-  workflow_dispatch: 
+      - 'news/*.json'
+  workflow_dispatch:
+
 jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2 # نحتاج لمعرفة الملف الذي تم تغييره
+          fetch-depth: 2
 
       - name: Get latest news file and extract fields
         id: news
         run: |
-          # العثور على أحدث ملف news تم إضافته أو تعديله
           NEW_FILE=$(git diff --name-only HEAD~1 HEAD -- 'news/*.json' | head -n 1)
           if [ -z "$NEW_FILE" ]; then
             echo "لا يوجد ملف خبر جديد"
             exit 0
           fi
           echo "file=$NEW_FILE" >> $GITHUB_OUTPUT
-          # استخراج العنوان والمنطقة من ملف JSON باستخدام jq
           echo "title=$(jq -r '.title // "بدون عنوان"' "$NEW_FILE")" >> $GITHUB_OUTPUT
           echo "region=$(jq -r '.region // ""' "$NEW_FILE")" >> $GITHUB_OUTPUT
           echo "newsId=$(jq -r '.id // ""' "$NEW_FILE")" >> $GITHUB_OUTPUT
+
+      - name: Debug values
+        if: steps.news.outputs.file != ''
+        run: |
+          echo "File: ${{ steps.news.outputs.file }}"
+          echo "Title: ${{ steps.news.outputs.title }}"
+          echo "Region: ${{ steps.news.outputs.region }}"
+          echo "NewsId: ${{ steps.news.outputs.newsId }}"
+          echo "Secret length: ${#FCM_SERVICE_ACCOUNT}"
+        env:
+          FCM_SERVICE_ACCOUNT: ${{ secrets.FCM_SERVICE_ACCOUNT }}
 
       - name: Setup Node.js
         if: steps.news.outputs.file != ''
@@ -40,7 +50,6 @@ jobs:
       - name: Send FCM notification
         if: steps.news.outputs.file != ''
         env:
-          # هنا نمرر السر (مفتاح الخدمة) والمتغيرات (العنوان والمنطقة) للسكريبت
           FCM_SERVICE_ACCOUNT: ${{ secrets.FCM_SERVICE_ACCOUNT }}
           NEWS_TITLE: ${{ steps.news.outputs.title }}
           NEWS_REGION: ${{ steps.news.outputs.region }}
