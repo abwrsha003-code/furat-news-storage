@@ -11,12 +11,11 @@ const newsTitle = process.env.NEWS_TITLE || 'بدون عنوان';
 const region = process.env.NEWS_REGION || '';
 const action = process.env.NEWS_ACTION || 'جديد';
 
+// ✅ رسالة data فقط (بدون notification) لضمان وصولها إلى onMessageReceived
 const message = {
-  notification: {
-    title: `${notificationTitle}: ${newsTitle}`,
-    body: region ? `المنطقة: ${region}` : `تم ${action} الخبر`
-  },
   data: {
+    title: `${notificationTitle}: ${newsTitle}`,
+    body: region ? `المنطقة: ${region}` : `تم ${action} الخبر`,
     newsId: process.env.NEWS_ID || '',
     action: action
   },
