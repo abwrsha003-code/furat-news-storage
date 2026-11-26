@@ -1,0 +1,18 @@
+{
+  "id": 1795710184418,
+  "title": "6557",
+  "summary": "الووو",
+  "category": "عام",
+  "region": "",
+  "time": "٢٦‏/١١‏/٢٠٢٦، ٤:٢٣:٠٤ م",
+  "imageColors": [
+    4286356384
+  ],
+  "body": "إرسال newsId في data (وهذا موجود بالفعل).\r\n\r\nفي FuratFirebaseMessagingService، وضع newsId في Intent الذي يفتح MainActivity.\r\n\r\nفي MainActivity، قراءة newsId من Intent والانتقال إلى شاشة التفاصيل.",
+  "urgent": false,
+  "authorUid": "a5lc0lmfu4SR3ACIKswpG6q1l263",
+  "channel": "غرانيج الرسمية",
+  "publishedAt": 1795710184418,
+  "updatedAt": 0,
+  "images": []
+}
