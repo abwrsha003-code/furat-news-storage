@@ -9,46 +9,74 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v5
         with:
           fetch-depth: 2
 
-      - name: Get latest news file and extract fields
+      - name: Get latest news file
         id: news
         run: |
+          set +e
           NEW_FILE=$(git diff --name-only HEAD~1 HEAD -- 'news/*.json' | head -n 1)
+          GIT_EXIT=$?
+          set -e
+
           if [ -z "$NEW_FILE" ]; then
-            echo "لا يوجد ملف خبر جديد"
+            echo "لا يوجد ملف خبر جديد في هذا الدفع"
+            echo "skip=true" >> $GITHUB_OUTPUT
             exit 0
           fi
+
+          echo "الملف المكتشف: $NEW_FILE"
+          echo "skip=false" >> $GITHUB_OUTPUT
           echo "file=$NEW_FILE" >> $GITHUB_OUTPUT
-          echo "title=$(jq -r '.title // "بدون عنوان"' "$NEW_FILE")" >> $GITHUB_OUTPUT
-          echo "region=$(jq -r '.region // ""' "$NEW_FILE")" >> $GITHUB_OUTPUT
-          echo "newsId=$(jq -r '.id // ""' "$NEW_FILE")" >> $GITHUB_OUTPUT
+
+          if [ ! -f "$NEW_FILE" ]; then
+            echo "⚠️ الملف غير موجود (ربما تم حذفه): $NEW_FILE"
+            echo "skip=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          TITLE=$(jq -r '.title // "بدون عنوان"' "$NEW_FILE")
+          REGION=$(jq -r '.region // ""' "$NEW_FILE")
+          NEWS_ID=$(jq -r '.id // ""' "$NEW_FILE")
+
+          echo "title=$TITLE" >> $GITHUB_OUTPUT
+          echo "region=$REGION" >> $GITHUB_OUTPUT
+          echo "newsId=$NEWS_ID" >> $GITHUB_OUTPUT
+
+          echo "✅ العنوان: $TITLE"
+          echo "✅ المنطقة: $REGION"
+          echo "✅ المعرف: $NEWS_ID"
 
       - name: Debug values
-        if: steps.news.outputs.file != ''
+        if: steps.news.outputs.skip == 'false'
         run: |
           echo "File: ${{ steps.news.outputs.file }}"
           echo "Title: ${{ steps.news.outputs.title }}"
           echo "Region: ${{ steps.news.outputs.region }}"
           echo "NewsId: ${{ steps.news.outputs.newsId }}"
           echo "Secret length: ${#FCM_SERVICE_ACCOUNT}"
+          if [ -z "$FCM_SERVICE_ACCOUNT" ]; then
+            echo "❌ FCM_SERVICE_ACCOUNT فارغ أو غير موجود"
+            exit 1
+          fi
         env:
           FCM_SERVICE_ACCOUNT: ${{ secrets.FCM_SERVICE_ACCOUNT }}
 
       - name: Setup Node.js
-        if: steps.news.outputs.file != ''
-        uses: actions/setup-node@v4
+        if: steps.news.outputs.skip == 'false'
+        uses: actions/setup-node@v5
         with:
           node-version: '20'
 
       - name: Install firebase-admin
-        if: steps.news.outputs.file != ''
+        if: steps.news.outputs.skip == 'false'
         run: npm install firebase-admin
 
       - name: Send FCM notification
-        if: steps.news.outputs.file != ''
+        if: steps.news.outputs.skip == 'false'
         env:
           FCM_SERVICE_ACCOUNT: ${{ secrets.FCM_SERVICE_ACCOUNT }}
           NEWS_TITLE: ${{ steps.news.outputs.title }}
