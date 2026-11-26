@@ -62,14 +62,17 @@ jobs:
           TITLE=$(jq -r '.title // "بدون عنوان"' "$NEW_FILE")
           REGION=$(jq -r '.region // ""' "$NEW_FILE")
           NEWS_ID=$(jq -r '.id // ""' "$NEW_FILE")
+          IMAGE_URL=$(jq -r '.images[0] // ""' "$NEW_FILE")
 
           echo "title=$TITLE" >> $GITHUB_OUTPUT
           echo "region=$REGION" >> $GITHUB_OUTPUT
           echo "newsId=$NEWS_ID" >> $GITHUB_OUTPUT
+          echo "imageUrl=$IMAGE_URL" >> $GITHUB_OUTPUT
 
           echo "✅ العنوان: $TITLE"
           echo "✅ المنطقة: $REGION"
           echo "✅ المعرف: $NEWS_ID"
+          echo "✅ الصورة: $IMAGE_URL"
 
       - name: Debug values
         if: steps.news.outputs.skip == 'false'
@@ -78,6 +81,7 @@ jobs:
           echo "Title: ${{ steps.news.outputs.title }}"
           echo "Region: ${{ steps.news.outputs.region }}"
           echo "NewsId: ${{ steps.news.outputs.newsId }}"
+          echo "ImageUrl: ${{ steps.news.outputs.imageUrl }}"
           echo "Action: ${{ steps.news.outputs.action }}"
           echo "Secret length: ${#FCM_SERVICE_ACCOUNT}"
           if [ -z "$FCM_SERVICE_ACCOUNT" ]; then
@@ -106,4 +110,5 @@ jobs:
           NEWS_ID: ${{ steps.news.outputs.newsId }}
           NEWS_ACTION: ${{ steps.news.outputs.action }}
           NOTIF_TITLE: ${{ steps.news.outputs.notif_title }}
+          NEWS_IMAGE: ${{ steps.news.outputs.imageUrl }}
         run: node send-notification.js
