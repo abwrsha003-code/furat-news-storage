@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - 'news/*.json' # يعمل فقط عند تعديل أو إضافة ملفات الأخبار
-
+  workflow_dispatch: 
 jobs:
   notify:
     runs-on: ubuntu-latest
